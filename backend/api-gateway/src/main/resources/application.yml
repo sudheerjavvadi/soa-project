@@ -1,0 +1,131 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      # Define explicit routes for each microservice
+      routes:
+        # Auth Service routes (public - no JWT needed)
+        - id: auth-service-public
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/login, /api/auth/register
+          filters:
+            - StripPrefix=0
+
+        # Auth Service routes (protected)
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=0
+            - name: JwtAuthenticationFilter
+
+        # Expense Service
+        - id: expense-service
+          uri: lb://EXPENSE-SERVICE
+          predicates:
+            - Path=/api/expenses/**
+          filters:
+            - StripPrefix=0
+            - name: JwtAuthenticationFilter
+
+        # Category Service
+        - id: category-service
+          uri: lb://CATEGORY-SERVICE
+          predicates:
+            - Path=/api/categories/**
+          filters:
+            - StripPrefix=0
+            - name: JwtAuthenticationFilter
+
+        # Budget Service
+        - id: budget-service
+          uri: lb://BUDGET-SERVICE
+          predicates:
+            - Path=/api/budgets/**
+          filters:
+            - StripPrefix=0
+            - name: JwtAuthenticationFilter
+
+        # Report Service
+        - id: report-service
+          uri: lb://REPORT-SERVICE
+          predicates:
+            - Path=/api/reports/**
+          filters:
+            - StripPrefix=0
+            - name: JwtAuthenticationFilter
+
+        # Notification Service - internal /send endpoint (no JWT, called by expense-service Feign)
+        - id: notification-service-internal
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/notifications/send
+          filters:
+            - StripPrefix=0
+
+        # Notification Service - all other endpoints require JWT
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/notifications/**, /ws/**
+          filters:
+            - StripPrefix=0
+            - name: JwtAuthenticationFilter
+
+      # Global CORS configuration
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOrigins:
+              - "http://localhost:5173"
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+# Eureka Client - gateway registers itself and discovers other services
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    fetchRegistry: true
+    registerWithEureka: true
+  instance:
+    preferIpAddress: false
+
+# JWT Secret - MUST match what auth-service uses
+jwt:
+  secret: ${JWT_SECRET:SpendWise-Super-Secret-Key-That-Is-At-Least-256-Bits-Long-For-Security}
+  expiration: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.spendwise.gateway: DEBUG
