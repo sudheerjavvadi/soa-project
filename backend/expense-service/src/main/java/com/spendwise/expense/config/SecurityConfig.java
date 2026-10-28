@@ -29,7 +29,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .cors(c -> c.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(a -> a
-                .requestMatchers("/swagger-ui/**","/swagger-ui.html","/api-docs/**","/actuator/**").permitAll()
+                .requestMatchers("/swagger-ui/**","/swagger-ui.html","/v3/api-docs/**","/api-docs/**","/actuator/**").permitAll()
                 .anyRequest().authenticated())
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -39,7 +39,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration c = new CorsConfiguration();
-        c.setAllowedOrigins(List.of("http://localhost:5173","http://localhost:3000","http://localhost:8080"));
+        c.addAllowedOriginPattern("*");
         c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         c.setAllowedHeaders(List.of("*"));
         c.setAllowCredentials(true);

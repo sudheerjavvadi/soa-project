@@ -59,6 +59,7 @@ public class SecurityConfig {
                     "/api/auth/register",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
+                    "/v3/api-docs/**",
                     "/api-docs/**",
                     "/actuator/**"
                 ).permitAll()
@@ -113,19 +114,25 @@ public class SecurityConfig {
     }
 
     /**
-     * CORS Configuration - allows the React frontend (localhost:5173)
-     * to make API calls to this service.
+     * CORS Configuration - allows ALL origins in development.
+     * This permits the React frontend, Swagger UI, REST Client browser
+     * extensions (chrome-extension://...), and Postman to all work.
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // allowedOriginPatterns("*") supports credentials AND all origins
+        // (setAllowedOrigins("*") does NOT support credentials)
+        config.addAllowedOriginPattern("*");
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
 }
+

@@ -25,7 +25,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .cors(c -> c.configurationSource(cors()))
             .authorizeHttpRequests(a -> a
-                .requestMatchers("/swagger-ui/**","/swagger-ui.html","/api-docs/**","/actuator/**","/ws/**").permitAll()
+                .requestMatchers("/swagger-ui/**","/swagger-ui.html","/v3/api-docs/**","/api-docs/**","/actuator/**","/ws/**").permitAll()
                 .requestMatchers("/api/notifications/send").permitAll() // internal call from expense-service
                 .anyRequest().authenticated())
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -36,7 +36,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource cors() {
         CorsConfiguration c = new CorsConfiguration();
-        c.setAllowedOrigins(List.of("http://localhost:5173","http://localhost:3000","http://localhost:8080"));
+        c.addAllowedOriginPattern("*");
         c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         c.setAllowedHeaders(List.of("*")); c.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource s = new UrlBasedCorsConfigurationSource();

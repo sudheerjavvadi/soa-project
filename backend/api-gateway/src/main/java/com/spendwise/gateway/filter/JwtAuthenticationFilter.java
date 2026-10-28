@@ -2,7 +2,8 @@ package com.spendwise.gateway.filter;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -31,8 +32,9 @@ import java.util.List;
  * This way, individual microservices can trust the headers added by the gateway.
  */
 @Component
-@Slf4j
 public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAuthenticationFilter.Config> {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Value("${jwt.secret}")
     private String secret;
@@ -42,7 +44,18 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
         "/api/auth/login",
         "/api/auth/register",
         "/api/auth/health",
-        "/actuator"
+        "/actuator",
+        "/swagger-ui",
+        "/swagger-ui.html",
+        "/v3/api-docs",
+        "/api-docs",
+        "/webjars",
+        "/auth-service/v3/api-docs",
+        "/expense-service/v3/api-docs",
+        "/category-service/v3/api-docs",
+        "/budget-service/v3/api-docs",
+        "/report-service/v3/api-docs",
+        "/notification-service/v3/api-docs"
     );
 
     public JwtAuthenticationFilter() {
