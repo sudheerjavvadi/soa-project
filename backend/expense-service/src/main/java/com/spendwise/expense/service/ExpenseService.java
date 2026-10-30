@@ -50,18 +50,24 @@ public class ExpenseService {
      * Validates the category exists by calling category-service via Feign.
      */
     public ExpenseDto createExpense(ExpenseRequest request, Long employeeId,
-                                    String employeeName, String department) {
+                                    String employeeEmail, String department) {
         // Validate category exists (calls category-service)
         CategoryDto category = getCategoryOrThrow(request.getCategoryId());
 
         // Generate unique expense number: EXP-2026-00042
         String expenseNumber = generateExpenseNumber();
 
+        // Derive display name from email (e.g. alice@company.com -> alice)
+        String employeeName = employeeEmail != null
+            ? employeeEmail.split("@")[0].replace(".", " ")
+            : "Employee";
+
         Expense expense = Expense.builder()
                 .expenseNumber(expenseNumber)
                 .employeeId(employeeId)
                 .employeeName(employeeName)
-                .department(department)
+                .employeeEmail(employeeEmail)         // store email for notifications
+                .department(department != null ? department : "General")
                 .amount(request.getAmount())
                 .currency(request.getCurrency() != null ? request.getCurrency() : "INR")
                 .description(request.getDescription())
@@ -69,6 +75,8 @@ public class ExpenseService {
                 .categoryName(category.getName())
                 .expenseDate(request.getExpenseDate())
                 .receiptUrl(request.getReceiptUrl())
+                .merchantName(request.getMerchantName())
+                .notes(request.getNotes())
                 .status(ExpenseStatus.DRAFT)
                 .build();
 
@@ -170,6 +178,7 @@ public class ExpenseService {
         try {
             notificationClient.sendNotification(
                 employeeId,
+                expense.getEmployeeEmail(),                // send email to employee
                 "Expense Submitted",
                 "Your expense " + expense.getExpenseNumber() + " has been submitted for approval.",
                 "EXPENSE_SUBMITTED"
@@ -212,6 +221,7 @@ public class ExpenseService {
         try {
             notificationClient.sendNotification(
                 expense.getEmployeeId(),
+                expense.getEmployeeEmail(),               // send approval email to employee
                 "Expense Approved",
                 "Your expense " + expense.getExpenseNumber() + " of " + expense.getAmount() +
                 " " + expense.getCurrency() + " has been approved.",
@@ -250,6 +260,7 @@ public class ExpenseService {
         try {
             notificationClient.sendNotification(
                 expense.getEmployeeId(),
+                expense.getEmployeeEmail(),               // send rejection email to employee
                 "Expense Rejected",
                 "Your expense " + expense.getExpenseNumber() + " was rejected. Reason: " + reason,
                 "EXPENSE_REJECTED"
@@ -322,6 +333,8 @@ public class ExpenseService {
                 .categoryName(e.getCategoryName())
                 .expenseDate(e.getExpenseDate())
                 .receiptUrl(e.getReceiptUrl())
+                .merchantName(e.getMerchantName())
+                .notes(e.getNotes())
                 .status(e.getStatus().name())
                 .submittedAt(e.getSubmittedAt())
                 .approvedAt(e.getApprovedAt())

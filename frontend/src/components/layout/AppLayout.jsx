@@ -1,5 +1,6 @@
 import Sidebar from "./Sidebar";
 import Topbar  from "./Topbar";
+import AppFooter from "./AppFooter";
 
 export default function AppLayout({ title, children }) {
   return (
@@ -10,6 +11,7 @@ export default function AppLayout({ title, children }) {
         <div className="page-content fade-in">
           {children}
         </div>
+        <AppFooter />
       </div>
     </div>
   );

@@ -1,7 +1,5 @@
 export default function StatusBadge({ status }) {
-  return (
-    <span className={`badge badge-${status?.toLowerCase()}`}>
-      {status?.replace("_", " ")}
-    </span>
-  );
+  if (!status) return null;
+  const s = status.toLowerCase();
+  return <span className={`badge badge-${s}`}>{status.replace(/_/g, " ")}</span>;
 }

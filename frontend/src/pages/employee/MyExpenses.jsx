@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Icon } from "../../components/common/Icons";
 import { expenseAPI } from "../../api/expenses";
 import AppLayout from "../../components/layout/AppLayout";
 import StatusBadge from "../../components/common/StatusBadge";
@@ -27,7 +28,7 @@ export default function MyExpenses() {
             <div className="card-subtitle">All your submitted expense claims</div></div>
         </div>
         {loading ? <Loading /> : data.content.length === 0 ? (
-          <div className="empty-state"><div className="empty-icon">??</div>
+          <div className="empty-state"><div class="empty-icon"><Icon name="receipt" size={48} style={{opacity:0.35}} /></div>
             <div className="empty-text">No expenses found</div></div>
         ) : (
           <>
@@ -40,10 +41,10 @@ export default function MyExpenses() {
                       <td style={{color:"var(--accent-blue)",fontWeight:600}}>{e.expenseNumber}</td>
                       <td style={{maxWidth:200}}>{e.description}</td>
                       <td>{e.categoryName}</td>
-                      <td style={{fontWeight:700}}>?{Number(e.amount).toLocaleString("en-IN")}</td>
+                      <td style={{fontWeight:700}}>&#8377;{Number(e.amount).toLocaleString("en-IN")}</td>
                       <td>{e.expenseDate}</td>
                       <td><StatusBadge status={e.status} /></td>
-                      <td style={{color:"var(--text-muted)"}}>{e.merchantName || "—"}</td>
+                      <td style={{color:"var(--text-muted)"}}>{e.merchantName || ""}</td>
                     </tr>
                   ))}
                 </tbody>

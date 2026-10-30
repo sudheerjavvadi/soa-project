@@ -39,9 +39,15 @@ public class ExpenseController {
             @Valid @RequestBody ExpenseRequest request,
             HttpServletRequest httpRequest) {
 
-        Long userId = Long.parseLong(httpRequest.getHeader("X-User-Id"));
-        String email = httpRequest.getHeader("X-User-Email");
-        String dept  = httpRequest.getHeader("X-User-Department");
+        Long   userId = Long.parseLong(httpRequest.getHeader("X-User-Id"));
+        String email  = httpRequest.getHeader("X-User-Email");       // e.g. alice@company.com
+        String name   = httpRequest.getHeader("X-User-Name");        // e.g. Alice Johnson (set by gateway)
+        String dept   = httpRequest.getHeader("X-User-Department");  // e.g. Engineering
+
+        // Fall back to deriving name from email if gateway didn't provide X-User-Name
+        if (name == null || name.isBlank()) {
+            name = email != null ? email.split("@")[0].replace(".", " ") : "Employee";
+        }
 
         ExpenseDto dto = expenseService.createExpense(request, userId, email, dept);
         return ResponseEntity.status(HttpStatus.CREATED)

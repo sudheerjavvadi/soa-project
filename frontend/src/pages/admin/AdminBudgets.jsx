@@ -1,3 +1,4 @@
+import { Icon } from "../../components/common/Icons";
 import { useState, useEffect } from "react";
 import { budgetAPI }   from "../../api/budgets";
 import { categoryAPI } from "../../api/categories";
@@ -33,15 +34,15 @@ export default function AdminBudgets() {
 
   return (
     <AppLayout title="Budget Admin">
-      {msg && <div className="alert alert-success" style={{position:"fixed",top:80,right:24,zIndex:999}}>✅ {msg}</div>}
+      {msg && <div className="alert alert-success" style={{position:"fixed",top:80,right:24,zIndex:999}}> {msg}</div>}
       <div className="card">
         <div className="card-header">
-          <div><div className="card-title">💰 All Budgets</div>
-            <div className="card-subtitle">{budgets.length} budgets — all departments</div></div>
-          <button className="btn btn-primary" onClick={()=>setShow(true)}>➕ Create Budget</button>
+          <div><div className="card-title"> All Budgets</div>
+            <div className="card-subtitle">{budgets.length} budgets  all departments</div></div>
+          <button className="btn btn-primary" onClick={()=>setShow(true)}> Create Budget</button>
         </div>
         {loading ? <Loading /> : budgets.length===0 ? (
-          <div className="empty-state"><div className="empty-icon">💰</div><div className="empty-text">No budgets yet</div></div>
+          <div className="empty-state"><div class="empty-icon"><Icon name="chart" size={48} style={{opacity:0.35}} /></div><div className="empty-text">No budgets yet</div></div>
         ) : (
           <div className="table-wrap">
             <table>
@@ -52,9 +53,9 @@ export default function AdminBudgets() {
                     <td style={{fontWeight:700}}>{b.department}</td>
                     <td>{b.categoryName}</td>
                     <td>{MONTHS[b.month]} {b.financialYear}</td>
-                    <td>₹{Number(b.allocatedAmount).toLocaleString("en-IN")}</td>
-                    <td style={{fontWeight:600}}>₹{Number(b.spentAmount).toLocaleString("en-IN")}</td>
-                    <td style={{color:Number(b.remainingAmount)<0?"var(--accent-red)":"var(--accent-green)"}}>₹{Number(b.remainingAmount).toLocaleString("en-IN")}</td>
+                    <td>{Number(b.allocatedAmount).toLocaleString("en-IN")}</td>
+                    <td style={{fontWeight:600}}>{Number(b.spentAmount).toLocaleString("en-IN")}</td>
+                    <td style={{color:Number(b.remainingAmount)<0?"var(--accent-red)":"var(--accent-green)"}}>{Number(b.remainingAmount).toLocaleString("en-IN")}</td>
                     <td>
                       <div style={{display:"flex",alignItems:"center",gap:8}}>
                         <div className="progress-bar" style={{width:70}}>
@@ -81,7 +82,7 @@ export default function AdminBudgets() {
                   {DEPTS.map(d=><option key={d}>{d}</option>)}</select></div>
               <div className="form-group"><label className="form-label">Category</label>
                 <select className="form-select" value={form.categoryId} onChange={e=>setForm(p=>({...p,categoryId:e.target.value}))}>
-                  <option value="">Select…</option>
+                  <option value="">Select</option>
                   {cats.map(c=><option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}</select></div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 <div className="form-group"><label className="form-label">Month</label>
@@ -90,7 +91,7 @@ export default function AdminBudgets() {
                 <div className="form-group"><label className="form-label">Year</label>
                   <input className="form-input" type="number" value={form.financialYear} onChange={e=>setForm(p=>({...p,financialYear:parseInt(e.target.value)}))} /></div>
               </div>
-              <div className="form-group"><label className="form-label">Allocated Amount (₹)</label>
+              <div className="form-group"><label className="form-label">Allocated Amount (Rs.)</label>
                 <input className="form-input" type="number" value={form.allocatedAmount} onChange={e=>setForm(p=>({...p,allocatedAmount:e.target.value}))}/></div>
             </div>
             <div className="modal-footer">

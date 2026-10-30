@@ -70,4 +70,27 @@ info:
   swagger-ui: http://localhost:8086/swagger-ui.html
   api-docs: http://localhost:8086/v3/api-docs
 
+# ── Email (SMTP) Configuration ──────────────────────────────────
+# Uses Gmail SMTP. Replace with your actual Gmail & App Password.
+# To get Gmail App Password: Google Account → Security → 2-Step → App Passwords
+app:
+  mail:
+    enabled: ${MAIL_ENABLED:false}       # set to true to enable email sending
+    from: ${MAIL_FROM:spendwise.notify@gmail.com}
+
+spring:
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:spendwise.notify@gmail.com}
+    password: ${MAIL_PASSWORD:your-app-password-here}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: false
+
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Icon } from "../../components/common/Icons";
 import { budgetAPI } from "../../api/budgets";
 import AppLayout from "../../components/layout/AppLayout";
 import Loading from "../../components/common/Loading";
@@ -18,16 +19,16 @@ export default function ManagerBudgets() {
     <AppLayout title="Budgets">
       {alerts.length>0 && (
         <div className="alert alert-warning" style={{marginBottom:16}}>
-          ⚠️ {alerts.length} budget(s) have reached warning threshold!
+           {alerts.length} budget(s) have reached warning threshold!
         </div>
       )}
       <div className="card">
         <div className="card-header">
-          <div><div className="card-title">💰 Department Budgets</div>
+          <div><div className="card-title" style={{display:"flex",alignItems:"center",gap:8}}><Icon name="chart" size={16}/>Department Budgets</div>
             <div className="card-subtitle">Current month budget overview</div></div>
         </div>
         {loading ? <Loading /> : budgets.length===0 ? (
-          <div className="empty-state"><div className="empty-icon">💰</div>
+          <div className="empty-state"><div class="empty-icon"><Icon name="chart" size={48} style={{opacity:0.35}} /></div>
             <div className="empty-text">No budgets configured</div>
             <div className="empty-sub">Contact Finance Admin to allocate budgets</div></div>
         ) : (
@@ -39,10 +40,10 @@ export default function ManagerBudgets() {
                   <tr key={b.id}>
                     <td style={{fontWeight:700}}>{b.department}</td>
                     <td>{b.categoryName}</td>
-                    <td>₹{Number(b.allocatedAmount).toLocaleString("en-IN")}</td>
-                    <td style={{fontWeight:600}}>₹{Number(b.spentAmount).toLocaleString("en-IN")}</td>
+                    <td>{Number(b.allocatedAmount).toLocaleString("en-IN")}</td>
+                    <td style={{fontWeight:600}}>{Number(b.spentAmount).toLocaleString("en-IN")}</td>
                     <td style={{color:Number(b.remainingAmount)<0?"var(--accent-red)":"var(--accent-green)"}}>
-                      ₹{Number(b.remainingAmount).toLocaleString("en-IN")}</td>
+                      {Number(b.remainingAmount).toLocaleString("en-IN")}</td>
                     <td>
                       <div style={{display:"flex",alignItems:"center",gap:8}}>
                         <div className="progress-bar" style={{width:80}}>

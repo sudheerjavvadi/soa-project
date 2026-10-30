@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Icon } from "../../components/common/Icons";
 import { useNavigate } from "react-router-dom";
 import { expenseAPI } from "../../api/expenses";
 import { categoryAPI } from "../../api/categories";
@@ -54,8 +55,8 @@ export default function NewExpense() {
         <h2 style={{fontSize:22,fontWeight:800,marginBottom:6}}>Submit Expense Claim</h2>
         <p style={{color:"var(--text-muted)",marginBottom:24}}>Fill in the details below and either save as draft or submit for manager approval.</p>
 
-        {error   && <div className="alert alert-error">? {error}</div>}
-        {success && <div className="alert alert-success">? {success}</div>}
+        {error   && <div className="alert alert-error" style={{display:"flex",gap:8,alignItems:"flex-start"}}><Icon name="error" size={16}/>{error}</div>}
+        {success && <div className="alert alert-success" style={{display:"flex",gap:8,alignItems:"flex-start"}}><Icon name="success" size={16}/>{success}</div>}
 
         <div className="card">
           <div className="form-grid">
@@ -65,14 +66,14 @@ export default function NewExpense() {
                 value={form.description} onChange={e => set("description", e.target.value)} />
             </div>
             <div className="form-group">
-              <label className="form-label">Amount (?) *</label>
+              <label className="form-label">Amount (&#8377;) *</label>
               <input className="form-input" type="number" min="0" step="0.01" placeholder="0.00"
                 value={form.amount} onChange={e => set("amount", e.target.value)} />
             </div>
             <div className="form-group">
               <label className="form-label">Category *</label>
               <select className="form-select" value={form.categoryId} onChange={e => set("categoryId", e.target.value)}>
-                <option value="">Select category…</option>
+                <option value="">Select category</option>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
               </select>
             </div>
@@ -92,16 +93,16 @@ export default function NewExpense() {
             </div>
             <div className="form-group" style={{gridColumn:"1/-1"}}>
               <label className="form-label">Additional Notes</label>
-              <textarea className="form-textarea" placeholder="Any additional details…"
+              <textarea className="form-textarea" placeholder="Any additional details"
                 value={form.notes} onChange={e => set("notes", e.target.value)} />
             </div>
           </div>
           <div style={{display:"flex",gap:12,marginTop:24}}>
             <button className="btn btn-ghost" onClick={() => handleSave(false)} disabled={submitting}>
-              ?? Save as Draft
+              Save as Draft
             </button>
             <button className="btn btn-primary" onClick={() => handleSave(true)} disabled={submitting}>
-              {submitting ? "Submitting…" : "?? Submit for Approval"}
+              {submitting ? "Submitting..." : "Submit for Approval"}
             </button>
           </div>
         </div>

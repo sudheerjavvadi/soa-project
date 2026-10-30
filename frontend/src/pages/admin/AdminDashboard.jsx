@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Icon } from "../../components/common/Icons";
 import { authAPI }    from "../../api/auth";
 import { expenseAPI } from "../../api/expenses";
 import { categoryAPI } from "../../api/categories";
@@ -26,23 +27,23 @@ export default function AdminDashboard() {
         <>
           <div className="stats-grid">
             <div className="stat-card">
-              <div className="stat-icon purple">??</div>
+              <div className="stat-icon purple"><Icon name="users" size={20} /></div>
               <div><div className="stat-value">{users.length}</div><div className="stat-label">Total Users</div></div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon green">??</div>
+              <div className="stat-icon green"><Icon name="check" size={20} /></div>
               <div><div className="stat-value">{users.filter(u=>u.active).length}</div><div className="stat-label">Active Users</div></div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon blue">??</div>
+              <div className="stat-icon blue"><Icon name="user" size={20} /></div>
               <div><div className="stat-value">{roleCount("EMPLOYEE")}</div><div className="stat-label">Employees</div></div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon orange">??</div>
+              <div className="stat-icon orange"><Icon name="building" size={20} /></div>
               <div><div className="stat-value">{roleCount("MANAGER")}</div><div className="stat-label">Managers</div></div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon red">??</div>
+              <div className="stat-icon red"><Icon name="finance" size={20} /></div>
               <div><div className="stat-value">{roleCount("FINANCE_ADMIN")}</div><div className="stat-label">Finance Admins</div></div>
             </div>
           </div>
@@ -50,7 +51,7 @@ export default function AdminDashboard() {
           {/* Users Table */}
           <div className="card" style={{marginBottom:24}}>
             <div className="card-header">
-              <div><div className="card-title">?? All Users</div>
+              <div><div className="card-title">All Users</div>
                 <div className="card-subtitle">Registered system users</div></div>
             </div>
             <div className="table-wrap">
@@ -62,8 +63,8 @@ export default function AdminDashboard() {
                       <td style={{fontWeight:600}}>{u.firstName} {u.lastName}</td>
                       <td style={{color:"var(--text-secondary)"}}>{u.email}</td>
                       <td><span className={`role-tag ${u.role}`}>{u.role?.replace("_"," ")}</span></td>
-                      <td>{u.department || "—"}</td>
-                      <td style={{color:"var(--text-muted)"}}>{u.employeeId || "—"}</td>
+                      <td>{u.department || ""}</td>
+                      <td style={{color:"var(--text-muted)"}}>{u.employeeId || ""}</td>
                       <td>
                         <span className={`badge ${u.active?"badge-approved":"badge-rejected"}`}>
                           {u.active ? "Active" : "Inactive"}
@@ -78,9 +79,9 @@ export default function AdminDashboard() {
 
           {/* Recent Expenses */}
           <div className="card">
-            <div className="card-title" style={{marginBottom:16}}>?? Recent Expenses (System-wide)</div>
+            <div className="card-title" style={{marginBottom:16}}>Recent Expenses (System-wide)</div>
             {expenses.length === 0 ? (
-              <div className="empty-state"><div className="empty-icon">??</div><div className="empty-text">No expenses yet</div></div>
+              <div className="empty-state"><div className="empty-icon"><Icon name="receipt" size={48} style={{opacity:0.35}} /></div><div className="empty-text">No expenses yet</div></div>
             ) : (
               <div className="table-wrap">
                 <table>
@@ -92,7 +93,7 @@ export default function AdminDashboard() {
                         <td>{e.employeeName}</td>
                         <td>{e.department}</td>
                         <td>{e.categoryName}</td>
-                        <td style={{fontWeight:700}}>?{Number(e.amount).toLocaleString("en-IN")}</td>
+                        <td style={{fontWeight:700}}>&#8377;{Number(e.amount).toLocaleString("en-IN")}</td>
                         <td><StatusBadge status={e.status} /></td>
                       </tr>
                     ))}

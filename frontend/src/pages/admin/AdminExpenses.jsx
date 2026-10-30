@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Icon } from "../../components/common/Icons";
 import { expenseAPI } from "../../api/expenses";
 import AppLayout from "../../components/layout/AppLayout";
 import StatusBadge from "../../components/common/StatusBadge";
@@ -20,11 +21,11 @@ export default function AdminExpenses() {
     <AppLayout title="All Expenses (Admin)">
       <div className="card">
         <div className="card-header">
-          <div><div className="card-title">🧾 All Expenses — System Admin View</div>
-            <div className="card-subtitle">Showing page {page+1} · Total on page: ₹{total.toLocaleString("en-IN")}</div></div>
+          <div><div className="card-title" style={{display:"flex",alignItems:"center",gap:8}}><Icon name="layers" size={16} /> All Expenses — System Admin View</div>
+            <div className="card-subtitle">Showing page {page+1}  Total on page: {total.toLocaleString("en-IN")}</div></div>
         </div>
         {loading ? <Loading /> : data.content.length===0 ? (
-          <div className="empty-state"><div className="empty-icon">🧾</div><div className="empty-text">No expenses</div></div>
+          <div className="empty-state"><div className="empty-icon"><Icon name="receipt" size={48} style={{opacity:0.35}} /></div><div className="empty-text">No expenses</div></div>
         ) : (
           <>
             <div className="table-wrap">
@@ -38,7 +39,7 @@ export default function AdminExpenses() {
                       <td style={{color:"var(--text-muted)"}}>{e.department}</td>
                       <td style={{maxWidth:180}}>{e.description}</td>
                       <td>{e.categoryName}</td>
-                      <td style={{fontWeight:700}}>₹{Number(e.amount).toLocaleString("en-IN")}</td>
+                      <td style={{fontWeight:700}}>&#8377;{Number(e.amount).toLocaleString("en-IN")}</td>
                       <td>{e.expenseDate}</td>
                       <td><StatusBadge status={e.status}/></td>
                     </tr>

@@ -76,6 +76,8 @@ public class Expense {
 
     private String rejectionReason; // Required when status = REJECTED
 
+    private String employeeEmail;   // Cached employee email for sending notifications
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

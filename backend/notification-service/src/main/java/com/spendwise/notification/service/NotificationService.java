@@ -14,14 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * NotificationService - saves notifications to DB and pushes to WebSocket.
+ * NotificationService - saves notifications to DB, pushes to WebSocket, and sends emails.
  *
- * sendNotification() does two things:
+ * sendNotification() does THREE things:
  * 1. Saves to database (for notification history panel)
  * 2. Pushes via WebSocket to the frontend in real-time
- *
- * The SimpMessagingTemplate is Spring's WebSocket message sender.
- * It sends to the STOMP topic that the user's browser is subscribed to.
+ * 3. Sends an email notification (async, if enabled)
  */
 @Service
 @RequiredArgsConstructor
@@ -30,13 +28,20 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final SimpMessagingTemplate messagingTemplate; // WebSocket sender
+    private final SimpMessagingTemplate  messagingTemplate;  // WebSocket sender
+    private final EmailService           emailService;        // Email sender
 
     /**
      * Create and send a notification.
      * Called by Expense Service via Feign when expense is submitted/approved/rejected.
+     *
+     * @param userId    The user who receives the notification
+     * @param userEmail The user's email address (for email delivery)
+     * @param title     Short notification title
+     * @param message   Full notification message
+     * @param type      Notification type (EXPENSE_APPROVED, BUDGET_WARNING, etc.)
      */
-    public void sendNotification(Long userId, String title, String message, String type) {
+    public void sendNotification(Long userId, String userEmail, String title, String message, String type) {
         // 1. Save to database
         Notification notification = Notification.builder()
                 .userId(userId)
@@ -47,11 +52,23 @@ public class NotificationService {
                 .build();
         notification = notificationRepository.save(notification);
 
-        // 2. Push to WebSocket - frontend listening on /topic/notifications/{userId}
+        // 2. Push to WebSocket — frontend listening on /topic/notifications/{userId}
         NotificationDto dto = toDto(notification);
         messagingTemplate.convertAndSend("/topic/notifications/" + userId, dto);
 
-        log.info("Notification sent to user {}: [{}] {}", userId, type, title);
+        // 3. Send email (async — never blocks, never crashes if it fails)
+        if (userEmail != null && !userEmail.isBlank()) {
+            emailService.sendNotificationEmail(userEmail, title, type, title, message);
+        }
+
+        log.info("Notification sent to user {} ({}): [{}] {}", userId, userEmail, type, title);
+    }
+
+    /**
+     * Backward-compatible overload without email (called by older code).
+     */
+    public void sendNotification(Long userId, String title, String message, String type) {
+        sendNotification(userId, null, title, message, type);
     }
 
     /** Get all notifications for a user (paginated) */

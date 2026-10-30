@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Icon } from "../../components/common/Icons";
 import { categoryAPI } from "../../api/categories";
 import AppLayout from "../../components/layout/AppLayout";
 import Loading from "../../components/common/Loading";
@@ -7,7 +8,7 @@ export default function AdminCategories() {
   const [cats, setCats]   = useState([]);
   const [loading, setLoad]= useState(true);
   const [show, setShow]   = useState(false);
-  const [form, setForm]   = useState({ name:"", description:"", icon:"🏷️", budgetLimitPercentage:100 });
+  const [form, setForm]   = useState({ name:"", description:"", icon:"", budgetLimitPercentage:100 });
   const [msg, setMsg]     = useState("");
 
   const load = () => { setLoad(true); categoryAPI.getAll().then(r=>setCats(r.data?.data||[])).finally(()=>setLoad(false)); };
@@ -15,18 +16,18 @@ export default function AdminCategories() {
 
   const save = async () => {
     await categoryAPI.create(form); setMsg("Created!"); setShow(false);
-    setForm({ name:"", description:"", icon:"🏷️", budgetLimitPercentage:100 });
+    setForm({ name:"", description:"", icon:"", budgetLimitPercentage:100 });
     load(); setTimeout(()=>setMsg(""),3000);
   };
 
   return (
     <AppLayout title="Categories (Admin)">
-      {msg && <div className="alert alert-success" style={{position:"fixed",top:80,right:24,zIndex:999}}>✅ {msg}</div>}
+      {msg && <div className="alert alert-success" style={{position:"fixed",top:80,right:24,zIndex:999}}> {msg}</div>}
       <div className="card">
         <div className="card-header">
-          <div><div className="card-title">🏷️ Expense Categories</div>
+          <div><div className="card-title" style={{display:"flex",alignItems:"center",gap:8}}><Icon name="tag" size={16} /> Expense Categories</div>
             <div className="card-subtitle">{cats.length} total categories</div></div>
-          <button className="btn btn-primary" onClick={()=>setShow(true)}>➕ Add Category</button>
+          <button className="btn btn-primary" onClick={() => setShow(true)} style={{display:"flex",alignItems:"center",gap:6}}><Icon name="plus" size={14} />Add Category</button>
         </div>
         {loading ? <Loading /> : (
           <div className="table-wrap">

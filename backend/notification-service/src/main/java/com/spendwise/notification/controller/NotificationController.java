@@ -25,16 +25,17 @@ public class NotificationController {
 
     /**
      * Internal endpoint called by Expense Service via Feign.
-     * Creates and sends a notification.
+     * Creates and sends a notification (also sends email if userEmail provided).
      */
     @PostMapping("/send")
     @Operation(summary = "Send a notification (internal - called by other services)")
     public ResponseEntity<Void> sendNotification(
             @RequestParam Long userId,
+            @RequestParam(required = false) String userEmail,
             @RequestParam String title,
             @RequestParam String message,
             @RequestParam String type) {
-        notificationService.sendNotification(userId, title, message, type);
+        notificationService.sendNotification(userId, userEmail, title, message, type);
         return ResponseEntity.ok().build();
     }
 
@@ -69,11 +70,20 @@ public class NotificationController {
     }
 
     /** Mark all notifications as read */
-    @PostMapping("/mark-read")
+    @PutMapping("/my/mark-all-read")
     @Operation(summary = "Mark all notifications as read", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ApiResponse<Void>> markAllRead(HttpServletRequest req) {
         Long userId = Long.parseLong(req.getHeader("X-User-Id"));
         notificationService.markAllAsRead(userId);
         return ResponseEntity.ok(ApiResponse.success("All notifications marked as read", null));
+    }
+
+    /** Get unread count (for the notification badge) — also accessible at /my/unread-count */
+    @GetMapping("/my/unread-count")
+    @Operation(summary = "Get unread notification count (badge)", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<ApiResponse<Long>> getUnreadCountMy(HttpServletRequest req) {
+        Long userId = Long.parseLong(req.getHeader("X-User-Id"));
+        return ResponseEntity.ok(ApiResponse.success("Unread count",
+            notificationService.getUnreadCount(userId)));
     }
 }
